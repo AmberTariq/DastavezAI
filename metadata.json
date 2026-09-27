@@ -1,0 +1,8 @@
+{
+  "name": "Dastavez AI — Urdu Script & Document Localizer",
+  "description": "Official Urdu script translation, voice dictation, Roman Urdu formalization & calligraphic visuals.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

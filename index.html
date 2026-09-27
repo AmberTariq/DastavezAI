@@ -1,0 +1,1810 @@
+<!doctype html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dastavez AI — Urdu Script & Document Localizer</title>
+  <meta name="description" content="Official Urdu script translation, voice dictation, Roman Urdu formalization & calligraphic visuals" />
+  <meta property="og:title" content="Dastavez AI — Urdu Script & Document Localizer" />
+  <meta property="og:description" content="Official Urdu script translation, voice dictation, Roman Urdu formalization & calligraphic visuals" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <!-- Typography: Plus Jakarta Sans, Cormorant Garamond, Cinzel, Outfit, Noto Nastaliq Urdu & Noto Sans Arabic -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Noto+Nastaliq+Urdu:wght@400;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Marked.js for markdown rendering -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            heritage: {
+              bg: '#F9F6F0',         // Warm Ivory
+              surface: '#FFFFFF',    // White
+              surfaceAlt: '#F4EFEA', // Shaded manuscript ivory
+              text: '#1C2024',       // Deep Charcoal
+              muted: '#716B64',      // Muted slate-warm gray
+              subtle: '#9A9289',     // Subtle caption gray
+              accent: '#8C2D19',     // Terracotta Ink
+              accentHover: '#752313',// Darker terracotta
+              accentActive: '#5E1D10',
+              accentLight: '#FBECE8',// Terracotta tint
+              border: '#E2DCD5',     // Warm Gray border
+              borderDark: '#CDC5BC'  // Darker warm border
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', '"Outfit"', 'sans-serif'],
+            urdu: ['"Noto Nastaliq Urdu"', 'serif'],
+            arabic: ['"Noto Sans Arabic"', 'sans-serif'],
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    /* Document & Calligraphy Rules */
+    .font-urdu {
+      font-family: 'Noto Nastaliq Urdu', serif;
+      line-height: 2.35;
+      letter-spacing: 0;
+    }
+    .font-arabic {
+      font-family: 'Noto Sans Arabic', sans-serif;
+      line-height: 1.9;
+    }
+    
+    /* Scrollbar styling matching Heritage Manuscript */
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #F9F6F0;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #E2DCD5;
+      border-radius: 2px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #CDC5BC;
+    }
+
+    /* Markdown prose styles for document fidelity */
+    .doc-prose {
+      color: #1C2024;
+      font-size: 0.9375rem;
+    }
+    .doc-prose h1, .doc-prose h2, .doc-prose h3, .doc-prose h4 {
+      color: #1C2024;
+      font-weight: 700;
+      margin-top: 1.4rem;
+      margin-bottom: 0.6rem;
+      letter-spacing: -0.01em;
+    }
+    .doc-prose h1 { font-size: 1.35rem; border-bottom: 1px solid #E2DCD5; padding-bottom: 0.4rem; }
+    .doc-prose h2 { font-size: 1.15rem; }
+    .doc-prose h3 { font-size: 1.02rem; }
+    .doc-prose p {
+      margin-bottom: 0.85rem;
+      line-height: 1.75;
+    }
+    .doc-prose ul {
+      list-style-type: disc;
+      margin-left: 1.25rem;
+      margin-bottom: 0.85rem;
+    }
+    .doc-prose ol {
+      list-style-type: decimal;
+      margin-left: 1.25rem;
+      margin-bottom: 0.85rem;
+    }
+    .doc-prose li {
+      margin-bottom: 0.35rem;
+    }
+    .doc-prose strong {
+      color: #1C2024;
+      font-weight: 700;
+    }
+    .doc-prose blockquote {
+      border-left: 3px solid #8C2D19;
+      padding-left: 1rem;
+      margin: 1rem 0;
+      color: #716B64;
+      background: #F9F6F0;
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+    }
+    [dir="rtl"] .doc-prose blockquote {
+      border-left: none;
+      border-right: 3px solid #8C2D19;
+      padding-left: 0;
+      padding-right: 1rem;
+    }
+    [dir="rtl"] .doc-prose ul, [dir="rtl"] .doc-prose ol {
+      margin-left: 0;
+      margin-right: 1.25rem;
+    }
+    .doc-prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.875rem;
+    }
+    .doc-prose th, .doc-prose td {
+      border: 1px solid #E2DCD5;
+      padding: 0.5rem 0.75rem;
+      text-align: left;
+    }
+    [dir="rtl"] .doc-prose th, [dir="rtl"] .doc-prose td {
+      text-align: right;
+    }
+    .doc-prose th {
+      background: #F4EFEA;
+      color: #1C2024;
+      font-weight: 600;
+    }
+
+    /* Publication-Grade Print & PDF Styles */
+    @page {
+      size: A4;
+      margin: 20mm 15mm;
+    }
+
+    @media print {
+      html, body {
+        background: #FFFFFF !important;
+        color: #1C2024 !important;
+        font-size: 11pt !important;
+        line-height: 1.65 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        overflow: visible !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      /* Hide all surrounding UI elements: headers, sidebars, toolbars, input panels, buttons, footers */
+      header,
+      #presetBar,
+      #inputColumn,
+      #footerBar,
+      #apiModal,
+      #imageModal,
+      #legalModal,
+      #exportMenuWrapper,
+      #exportMenu,
+      #placeholderState,
+      #loadingState,
+      #groundingSourcesContainer,
+      #outputFooterMeta,
+      .print-header,
+      #toastContainer,
+      .output-toolbar,
+      #outputColumn > div:first-child,
+      button,
+      select,
+      input,
+      textarea {
+        display: none !important;
+        visibility: hidden !important;
+      }
+
+      main {
+        display: block !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        background: #FFFFFF !important;
+      }
+
+      #outputColumn {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        background: #FFFFFF !important;
+      }
+
+      #outputContainer {
+        border: none !important;
+        background: #FFFFFF !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        overflow: visible !important;
+        height: auto !important;
+        max-height: none !important;
+        width: 100% !important;
+      }
+
+      /* Render ONLY the .output-content localized document full-width */
+      .output-content,
+      #outputContent {
+        display: block !important;
+        width: 100% !important;
+        background: #FFFFFF !important;
+        color: #1C2024 !important;
+      }
+
+      /* Avoid awkward page breaks across pages */
+      .output-content h1,
+      .output-content h2,
+      .output-content h3,
+      .output-content h4,
+      .output-content h5,
+      .output-content h6,
+      .doc-prose h1,
+      .doc-prose h2,
+      .doc-prose h3,
+      .doc-prose h4 {
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+        break-after: avoid !important;
+        page-break-after: avoid !important;
+        color: #111827 !important;
+      }
+
+      .output-content p,
+      .output-content blockquote,
+      .output-content table,
+      .output-content ul,
+      .output-content ol,
+      .output-content li,
+      .doc-prose p,
+      .doc-prose blockquote,
+      .doc-prose table,
+      .doc-prose tr {
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+      }
+
+      .doc-prose blockquote {
+        background: #FDFBF7 !important;
+        border-color: #8C2D19 !important;
+        color: #2D3748 !important;
+      }
+
+      .doc-prose table {
+        border-collapse: collapse !important;
+        width: 100% !important;
+      }
+      .doc-prose th, .doc-prose td {
+        border: 1px solid #D1D5DB !important;
+        color: #1C2024 !important;
+      }
+      .doc-prose th {
+        background: #F9F6F0 !important;
+      }
+
+      /* Letterhead Header for print publication */
+      .print-header {
+        display: block !important;
+        border-bottom: 2px solid #8C2D19 !important;
+        padding-bottom: 12px !important;
+        margin-bottom: 24px !important;
+      }
+      .print-header h2 {
+        color: #1C2024 !important;
+        font-size: 18pt !important;
+      }
+    }
+
+    @keyframes pulseRecord {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.15); }
+    }
+    .animate-pulse-record {
+      animation: pulseRecord 1.2s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="bg-heritage-bg text-heritage-text font-sans min-h-screen flex flex-col antialiased selection:bg-heritage-accent selection:text-white">
+
+  <!-- MASTHEAD HEADER -->
+  <header class="border-b border-heritage-border bg-heritage-surface sticky top-0 z-40 px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
+    <div class="flex items-center space-x-3.5">
+      <!-- Authentic Pakistani Arch & Calligraphic Seal Motif -->
+      <div class="w-10 h-10 bg-heritage-surfaceAlt border border-heritage-border flex items-center justify-center shrink-0">
+        <svg class="w-6 h-6 text-heritage-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9.5" stroke="#E2DCD5" stroke-width="1" />
+          <path d="M14.2 8.5C13.8 8.2 13 8 12.1 8C9.8 8 8 9.8 8 12.1C8 14.4 9.8 16.2 12.1 16.2C13 16.2 13.8 16 14.2 15.7C13.2 15.3 12.5 14.2 12.5 13C12.5 11.8 13.2 10.7 14.2 10.3" fill="currentColor" stroke="none" />
+          <polygon points="14.8,9 15.2,10 16.3,10 15.4,10.7 15.7,11.8 14.8,11.2 13.9,11.8 14.2,10.7 13.3,10 14.4,10" fill="#8C2D19" stroke="none" />
+        </svg>
+      </div>
+
+      <div>
+        <h1 class="font-bold text-base sm:text-lg text-heritage-text tracking-tight flex items-center gap-2">
+          <span class="text-heritage-accent font-extrabold tracking-normal">Dastavez AI</span>
+          <span class="text-heritage-muted font-normal text-sm">—</span>
+          <span class="text-xs sm:text-sm md:text-base font-semibold text-heritage-text">Urdu Script &amp; Document Localizer</span>
+        </h1>
+        <p class="text-xs text-heritage-muted hidden sm:block mt-0.5">
+          Official Urdu script translation, voice dictation, Roman Urdu formalization & calligraphic visuals
+        </p>
+      </div>
+    </div>
+
+    <!-- Hidden engine & credential hooks for script continuity without cluttering UI presentation -->
+    <div class="hidden" aria-hidden="true">
+      <select id="modelSelector" onchange="saveDraftNow()">
+        <option value="gemini-3.5-flash-lite" selected>Gemini 3.5 Flash Lite</option>
+        <option value="gemini-3.8-flash">Gemini 3.8 Flash</option>
+        <option value="gemini-3.5-flash">Gemini 3.5 Flash</option>
+        <option value="gemini-flash-lite-latest">Gemini Flash Lite Latest</option>
+      </select>
+      <button type="button" id="imageStudioBtn" onclick="toggleImageModal(true)"></button>
+      <button type="button" id="apiKeyBtn" onclick="toggleModal(true)">
+        <span id="apiKeyStatusText"></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- QUICK PRESETS DOCKET TOOLBAR (Horizontal scrollable bar with consistent pill-buttons) -->
+  <section id="presetBar" class="bg-heritage-surface border-b border-heritage-border px-4 sm:px-6 lg:px-8 py-2.5 flex items-center gap-2.5 overflow-x-auto scroll-smooth">
+    <div class="flex items-center gap-1.5 text-heritage-text font-semibold text-xs shrink-0 mr-1">
+      <svg class="w-3.5 h-3.5 text-heritage-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+        <polyline points="14 2 14 8 20 8"></polyline>
+        <line x1="16" y1="13" x2="8" y2="13"></line>
+        <line x1="16" y1="17" x2="8" y2="17"></line>
+        <polyline points="10 9 9 9 8 9"></polyline>
+      </svg>
+      <span>Document Dockets:</span>
+    </div>
+
+    <div class="flex items-center gap-2 shrink-0">
+      <button type="button" onclick="loadPreset('proposal')" class="shrink-0 rounded-full px-3.5 py-1.5 text-xs bg-heritage-surfaceAlt hover:bg-heritage-border border border-heritage-border text-heritage-text hover:text-heritage-accent font-medium transition-all shadow-xs cursor-pointer active:scale-95">
+        Proposal: Roman Urdu to Executive EN
+      </button>
+      <button type="button" onclick="loadPreset('academic')" class="shrink-0 rounded-full px-3.5 py-1.5 text-xs bg-heritage-surfaceAlt hover:bg-heritage-border border border-heritage-border text-heritage-text hover:text-heritage-accent font-medium transition-all shadow-xs cursor-pointer active:scale-95">
+        Research: English to Formal Urdu
+      </button>
+      <button type="button" onclick="loadPreset('client_email')" class="shrink-0 rounded-full px-3.5 py-1.5 text-xs bg-heritage-surfaceAlt hover:bg-heritage-border border border-heritage-border text-heritage-text hover:text-heritage-accent font-medium transition-all shadow-xs cursor-pointer active:scale-95">
+        Commercial: Invoice Letter to Urdu
+      </button>
+      <button type="button" onclick="loadPreset('notes')" class="shrink-0 rounded-full px-3.5 py-1.5 text-xs bg-heritage-surfaceAlt hover:bg-heritage-border border border-heritage-border text-heritage-text hover:text-heritage-accent font-medium transition-all shadow-xs cursor-pointer active:scale-95">
+        Minutes: Operational Action Points
+      </button>
+      <button type="button" onclick="loadPreset('legal_deed')" class="shrink-0 rounded-full px-3.5 py-1.5 text-xs bg-heritage-surfaceAlt hover:bg-heritage-border border border-heritage-border text-heritage-text hover:text-heritage-accent font-medium transition-all shadow-xs cursor-pointer active:scale-95">
+        Legal: Rental / Service Contract Clause
+      </button>
+      <button type="button" onclick="loadPreset('urdu_official')" class="shrink-0 rounded-full px-3.5 py-1.5 text-xs bg-heritage-surfaceAlt hover:bg-heritage-border border border-heritage-border text-heritage-text hover:text-heritage-accent font-medium transition-all shadow-xs cursor-pointer active:scale-95">
+        Official Press: Urdu to Global English
+      </button>
+    </div>
+  </section>
+
+  <!-- MAIN DUAL CHAMBERS WORKSPACE -->
+  <main class="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-0 overflow-hidden bg-heritage-bg">
+
+    <!-- INPUT CHAMBER -->
+    <div id="inputColumn" class="flex flex-col border-b lg:border-b-0 lg:border-r border-heritage-border p-4 sm:p-6 bg-heritage-surface">
+      
+      <!-- Source Header & Utility Actions -->
+      <div class="flex items-center justify-between mb-3 pb-2 border-b border-heritage-border">
+        <div class="flex items-center gap-2">
+          <svg class="w-4 h-4 text-heritage-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 20h9"></path>
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+          </svg>
+          <span class="text-xs font-semibold uppercase tracking-wider text-heritage-text">Source Document</span>
+        </div>
+
+        <div class="flex items-center space-x-2 text-xs">
+          <!-- Live Auto-Save Status Indicator -->
+          <div id="saveStatusIndicator" class="flex items-center gap-1.5 text-[11px] text-heritage-muted border-r border-heritage-border pr-2" title="Auto-save status for local browser storage">
+            <span id="saveStatusDot" class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+            <span id="saveStatusText" class="truncate max-w-[110px] sm:max-w-none">Draft saved</span>
+          </div>
+
+          <!-- Dictation / Microphone Transcription Button (gemini-3.5-transcribe) -->
+          <button type="button" id="recordAudioBtn" onclick="toggleAudioRecording()" class="flex items-center gap-1 px-2.5 py-1 bg-heritage-surfaceAlt hover:bg-heritage-border border border-heritage-border text-heritage-text rounded transition-colors" title="Input audio with your microphone to transcribe via gemini-3.5-transcribe">
+            <svg id="recordMicIcon" class="w-3.5 h-3.5 text-heritage-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+              <line x1="12" y1="19" x2="12" y2="23"></line>
+              <line x1="8" y1="23" x2="16" y2="23"></line>
+            </svg>
+            <span id="recordBtnLabel">Dictate</span>
+          </button>
+
+          <span id="inputMetrics" class="text-heritage-muted hidden sm:inline">0 words &bull; 0 chars</span>
+          <button type="button" onclick="pasteClipboard()" class="text-heritage-muted hover:text-heritage-text transition-colors" title="Paste clipboard text">
+            Paste
+          </button>
+          <button type="button" onclick="clearInput()" class="text-heritage-muted hover:text-heritage-accent transition-colors" title="Clear current draft">
+            Clear
+          </button>
+        </div>
+      </div>
+
+      <!-- Live Voice Recording Banner (Shown during active recording) -->
+      <div id="recordingBanner" class="hidden mb-3 p-3 bg-heritage-accentLight border border-heritage-accent/30 rounded flex items-center justify-between text-xs">
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-heritage-accent animate-pulse-record"></span>
+          <span class="font-semibold text-heritage-accent">Listening... Recording Microphone Audio</span>
+          <span id="recordingTimer" class="font-mono text-heritage-accent font-bold">00:00</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="cancelAudioRecording()" class="px-2 py-1 text-heritage-muted hover:text-heritage-text transition-colors">
+            Cancel
+          </button>
+          <button type="button" onclick="stopAudioRecording()" class="px-3 py-1 bg-heritage-accent hover:bg-heritage-accentHover text-white font-medium rounded transition-colors flex items-center gap-1">
+            <span>Transcribe (gemini-3.5-transcribe)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Task Objective Selector -->
+      <div class="mb-4">
+        <label for="taskGoal" class="block text-xs font-medium text-heritage-muted mb-1.5">
+          Localization Objective
+        </label>
+        <select id="taskGoal" onchange="saveDraftNow()" class="w-full bg-heritage-surface border border-heritage-border text-heritage-text text-sm p-2.5 focus:border-heritage-accent focus:outline-none cursor-pointer">
+          <option value="translate_urdu">Translate & Localize to Formal Urdu (اردو میں باضابطہ ترجمہ)</option>
+          <option value="roman_to_english">Formalize Roman Urdu into Professional English</option>
+          <option value="roman_to_formal_urdu">Convert Roman Urdu to Pure Urdu Script (نستعلیق رسم الخط)</option>
+          <option value="summarize_action">Summarize & Extract Key Action Items (خلاصہ اور اہم نکات)</option>
+          <option value="reformat_pro">Reformat into Business/Academic Layout</option>
+        </select>
+      </div>
+
+      <!-- Input Text Area -->
+      <div class="flex-1 min-h-[280px] relative flex flex-col">
+        <textarea id="inputText" placeholder="Paste or compose source text in English, Roman Urdu, or Urdu script, or use Dictate to speak..." oninput="handleInputContentChange()" class="w-full h-full bg-heritage-bg border border-heritage-border p-4 text-sm text-heritage-text placeholder-heritage-subtle focus:outline-none focus:border-heritage-accent resize-none font-sans leading-relaxed"></textarea>
+      </div>
+
+      <!-- Options Deck: Linguistic Register, Search Grounding & Submission -->
+      <div class="mt-4 pt-3 border-t border-heritage-border flex flex-col sm:flex-row items-stretch sm:items-end gap-3">
+        <div class="flex-1">
+          <label for="toneSelector" class="block text-xs font-medium text-heritage-muted mb-1">
+            Linguistic Register
+          </label>
+          <select id="toneSelector" onchange="saveDraftNow()" class="w-full bg-heritage-surface border border-heritage-border text-heritage-text text-xs p-2.5 focus:outline-none cursor-pointer">
+            <option value="professional">Professional & Courteous (دفترانہ و باوقار)</option>
+            <option value="academic">Academic & Scholarly (علمی و تحقیقی)</option>
+            <option value="legal">Formal & Legal Register (قانونی و باضابطہ)</option>
+            <option value="persuasive">Persuasive Commercial (ترغیبی و کاروباری)</option>
+            <option value="simple">Plain & Direct (سلیس و عام فہم)</option>
+          </select>
+        </div>
+
+        <!-- Google Search Grounding Toggle (gemini-3.5-flash with googleSearch) -->
+        <div class="shrink-0 flex items-center mb-1 sm:mb-0">
+          <label class="flex items-center gap-2 cursor-pointer text-xs text-heritage-text select-none bg-heritage-surfaceAlt hover:bg-heritage-border border border-heritage-border px-3 py-2 transition-colors" title="Enable Google Search Grounding with gemini-3.5-flash to verify factual data, currency rates, or legal terminology">
+            <input type="checkbox" id="searchGroundingToggle" class="accent-heritage-accent w-4 h-4 cursor-pointer" />
+            <div class="flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5 text-heritage-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <span>Search Grounding</span>
+            </div>
+          </label>
+        </div>
+
+        <div class="shrink-0 sm:w-48">
+          <button onclick="processDocument()" id="processBtn" class="w-full bg-heritage-accent hover:bg-heritage-accentHover active:bg-heritage-accentActive text-white font-semibold text-sm py-2.5 px-4 transition-colors flex items-center justify-center gap-2 shadow-sm">
+            <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <span>Process Document</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- OUTPUT CHAMBER -->
+    <div id="outputColumn" class="flex flex-col p-4 sm:p-6 bg-heritage-surface relative">
+      
+      <!-- Output Header & Controls Bar -->
+      <div class="flex items-center justify-between mb-3 pb-2 border-b border-heritage-border">
+        <div class="flex items-center gap-2">
+          <svg class="w-4 h-4 text-heritage-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+          </svg>
+          <span class="text-xs font-semibold uppercase tracking-wider text-heritage-text">Localized Output</span>
+        </div>
+
+        <!-- Document Toolbar: English font selector, RTL/LTR, View toggle, Copy, Print/PDF, Export -->
+        <div class="output-toolbar flex items-center flex-wrap gap-1.5 text-xs">
+          <!-- English Font Selector with Inline Typeface Visual Preview -->
+          <select id="englishFontSelector" onchange="changeOutputFont(this.value)" class="bg-heritage-surfaceAlt hover:bg-heritage-border border border-heritage-border text-heritage-text px-2 py-1 transition-colors cursor-pointer text-xs focus:outline-none focus:border-heritage-accent font-medium" title="Select typography for English & Latin text in document">
+            <option value="'Cormorant Garamond', Georgia, serif" style="font-family: 'Cormorant Garamond', Georgia, serif;">Serif (Cormorant Garamond)</option>
+            <option value="'Plus Jakarta Sans', sans-serif" style="font-family: 'Plus Jakarta Sans', sans-serif;" selected>Sans-Serif (Plus Jakarta)</option>
+            <option value="'Cinzel', serif" style="font-family: 'Cinzel', serif;">Display (Cinzel)</option>
+          </select>
+
+          <!-- Dynamic Direction Switcher -->
+          <button onclick="toggleDirection()" id="dirToggleBtn" class="bg-heritage-surfaceAlt hover:bg-heritage-border border border-heritage-border text-heritage-text px-2.5 py-1 transition-colors" title="Toggle RTL / LTR text direction">
+            RTL
+          </button>
+
+          <!-- Markdown vs Rendered View Switcher -->
+          <button onclick="toggleViewMode()" id="viewModeBtn" class="bg-heritage-surfaceAlt hover:bg-heritage-border border border-heritage-border text-heritage-text px-2.5 py-1 transition-colors" title="Toggle between rendered document and raw Markdown">
+            Raw
+          </button>
+
+          <!-- Copy Button -->
+          <button onclick="copyOutput()" id="copyBtn" class="bg-heritage-surfaceAlt hover:bg-heritage-border border border-heritage-border text-heritage-text px-2.5 py-1 transition-colors flex items-center gap-1" title="Copy output text to clipboard">
+            <svg class="w-3.5 h-3.5 text-heritage-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            <span>Copy</span>
+          </button>
+
+          <!-- Print / Export PDF Button (Direct Access) -->
+          <button onclick="triggerPrint()" id="printPdfBtn" class="bg-heritage-surfaceAlt hover:bg-heritage-border border border-heritage-border text-heritage-text px-2.5 py-1 transition-colors flex items-center gap-1 font-medium" title="Print document or save as publication-ready PDF">
+            <svg class="w-3.5 h-3.5 text-heritage-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 6 2 18 2 18 9"></polyline>
+              <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+              <rect x="6" y="14" width="12" height="8"></rect>
+            </svg>
+            <span class="hidden sm:inline">Print / Export PDF</span>
+            <span class="sm:hidden">PDF</span>
+          </button>
+
+          <!-- Export Dropdown -->
+          <div class="relative inline-block text-left" id="exportMenuWrapper">
+            <button onclick="toggleExportMenu()" class="bg-heritage-surfaceAlt hover:bg-heritage-border border border-heritage-border text-heritage-text px-2.5 py-1 transition-colors flex items-center gap-1">
+              <span>Export</span>
+              <svg class="w-3 h-3 text-heritage-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            <div id="exportMenu" class="hidden absolute right-0 mt-1 w-36 bg-heritage-surface border border-heritage-border shadow-lg z-30 py-1 text-xs">
+              <button onclick="exportDocument('txt')" class="w-full text-left px-3 py-1.5 text-heritage-text hover:bg-heritage-surfaceAlt transition-colors">Plain Text (.txt)</button>
+              <button onclick="exportDocument('md')" class="w-full text-left px-3 py-1.5 text-heritage-text hover:bg-heritage-surfaceAlt transition-colors">Markdown (.md)</button>
+              <button onclick="triggerPrint()" class="w-full text-left px-3 py-1.5 text-heritage-text hover:bg-heritage-surfaceAlt transition-colors">Print / PDF</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Output Reader Sheet -->
+      <div id="outputContainer" dir="auto" class="flex-1 bg-heritage-bg border border-heritage-border p-5 overflow-y-auto text-heritage-text text-sm leading-relaxed doc-prose">
+        
+        <!-- Print Letterhead Header (Appears only on printed output) -->
+        <div class="print-header hidden">
+          <div class="text-xs uppercase tracking-widest text-gray-500">Official Bilingual Document Transcript</div>
+          <h2 class="text-xl font-bold text-black mt-1">Dastavez AI — Urdu Script & Document Localizer</h2>
+          <div id="printMetadata" class="text-xs text-gray-600 mt-1"></div>
+        </div>
+
+        <!-- Initial Placeholder State -->
+        <div id="placeholderState" class="h-full flex flex-col items-center justify-center text-center text-heritage-muted py-12">
+          <div class="w-12 h-12 mb-3 border border-heritage-border flex items-center justify-center text-heritage-muted bg-heritage-surface">
+            <svg class="w-6 h-6 text-heritage-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+            </svg>
+          </div>
+          <p class="font-medium text-heritage-text">Output transcript will appear here</p>
+          <p class="text-xs text-heritage-muted mt-1.5 max-w-sm">
+            Select a document docket or dictate via microphone, configure the linguistic register, and execute processing.
+          </p>
+        </div>
+
+        <!-- Signature Motion Loading State -->
+        <div id="loadingState" class="hidden h-full flex-col items-center justify-center text-center py-16">
+          <div class="w-48 h-1 bg-heritage-border overflow-hidden relative mb-4 rounded-full">
+            <div class="w-full h-full bg-heritage-accent animate-pulse"></div>
+          </div>
+          <p id="loadingStageText" class="text-xs font-semibold text-heritage-text tracking-wider uppercase">
+            Analyzing linguistic register & vocabulary...
+          </p>
+          <p class="text-xs text-heritage-muted mt-1.5">
+            Calibrating Nastaliq ligatures, contextual honorifics, and orthography
+          </p>
+        </div>
+
+        <!-- Rendered Output Content -->
+        <div id="outputContent" class="output-content hidden"></div>
+        <!-- Raw Text / Markdown View -->
+        <textarea id="rawOutputView" readonly class="hidden w-full h-full bg-transparent text-heritage-text font-mono text-xs focus:outline-none resize-none leading-relaxed"></textarea>
+
+        <!-- Google Search Grounding Sources Box (if citations returned) -->
+        <div id="groundingSourcesContainer" class="hidden mt-6 pt-4 border-t border-heritage-border">
+          <div class="flex items-center gap-1.5 text-xs font-semibold text-heritage-accent mb-2">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <span>Verified Google Search Grounding References (gemini-3.5-flash)</span>
+          </div>
+          <ul id="groundingSourcesList" class="space-y-1.5 text-xs text-heritage-muted"></ul>
+        </div>
+      </div>
+
+      <!-- Output Footer Meta -->
+      <div id="outputFooterMeta" class="mt-2 text-[11px] text-heritage-muted flex items-center justify-between pt-2 border-t border-heritage-border">
+        <span id="outputMetrics">Awaiting output</span>
+        <span id="outputTimestamp"></span>
+      </div>
+    </div>
+  </main>
+
+  <!-- AUTHENTIC EDITORIAL FOOTER -->
+  <footer id="footerBar" class="border-t border-heritage-border bg-heritage-surface px-4 sm:px-6 lg:px-8 py-3 text-xs text-heritage-muted flex flex-col sm:flex-row items-center justify-between gap-2.5">
+    <div class="flex items-center gap-2">
+      <span class="font-medium text-heritage-text">Dastavez AI — Urdu Script & Document Localizer</span>
+      <span>&bull;</span>
+      <span>Heritage Manuscript Engine</span>
+      <span>&bull;</span>
+      <span>Pakistani Bilingual Processing</span>
+    </div>
+
+    <div class="flex items-center space-x-4">
+      <button onclick="openLegalModal('privacy')" class="hover:text-heritage-text transition-colors underline-offset-2 hover:underline">
+        Privacy Policy
+      </button>
+      <button onclick="openLegalModal('terms')" class="hover:text-heritage-text transition-colors underline-offset-2 hover:underline">
+        Terms of Service
+      </button>
+      <button onclick="openLegalModal('security')" class="hover:text-heritage-text transition-colors underline-offset-2 hover:underline">
+        Data Sovereignty
+      </button>
+    </div>
+  </footer>
+
+  <!-- MANUSCRIPT VISUAL STUDIO MODAL (Create & Edit Images using gemini-3.1-flash-image-preview) -->
+  <div id="imageModal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-heritage-surface border border-heritage-border max-w-2xl w-full p-6 shadow-xl relative max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between mb-4 pb-2 border-b border-heritage-border">
+        <div class="flex items-center gap-2">
+          <div class="w-7 h-7 bg-heritage-accentLight text-heritage-accent flex items-center justify-center font-bold">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <circle cx="8.5" cy="8.5" r="1.5"></circle>
+              <polyline points="21 15 16 10 5 21"></polyline>
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-heritage-text">Manuscript Visual Studio</h3>
+            <p class="text-[11px] text-heritage-muted">Create & Edit Calligraphic Seals, Emblems, and Manuscript Artwork with gemini-3.1-flash-image-preview</p>
+          </div>
+        </div>
+        <button onclick="toggleImageModal(false)" class="text-heritage-muted hover:text-heritage-text">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-heritage-text mb-1">
+            Prompt / Instructions
+          </label>
+          <textarea id="imagePrompt" rows="3" placeholder="Describe the document seal, calligraphic emblem, or manuscript art you wish to generate or edit..." class="w-full bg-heritage-bg border border-heritage-border p-2.5 text-xs text-heritage-text placeholder-heritage-subtle focus:outline-none focus:border-heritage-accent resize-none"></textarea>
+          
+          <!-- Prompt Preset Chips -->
+          <div class="flex flex-wrap gap-1.5 mt-2">
+            <button type="button" onclick="setImagePromptPreset('Pakistani official notary circular seal with Urdu Nastaliq calligraphy stamp in terracotta red ink on ivory parchment')" class="text-[11px] bg-heritage-surfaceAlt hover:bg-heritage-border border border-heritage-border px-2 py-0.5 text-heritage-text transition-colors">
+              📜 Notary Seal Stamp
+            </button>
+            <button type="button" onclick="setImagePromptPreset('Mughal illuminated manuscript margin floral border in gold leaf and emerald ink')" class="text-[11px] bg-heritage-surfaceAlt hover:bg-heritage-border border border-heritage-border px-2 py-0.5 text-heritage-text transition-colors">
+              🌸 Illuminated Border
+            </button>
+            <button type="button" onclick="setImagePromptPreset('Traditional calligraphic Urdu Tuğra crest emblem reading Dua & Dhuan with vintage wax seal texture')" class="text-[11px] bg-heritage-surfaceAlt hover:bg-heritage-border border border-heritage-border px-2 py-0.5 text-heritage-text transition-colors">
+              🖋️ Calligraphic Crest
+            </button>
+          </div>
+        </div>
+
+        <!-- Optional Reference Image for Editing -->
+        <div class="border border-dashed border-heritage-border p-3 bg-heritage-surfaceAlt">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-xs font-semibold text-heritage-text">Optional Reference Image (For Image Editing)</span>
+            <button type="button" id="clearImageRefBtn" onclick="clearImageReference()" class="text-[11px] text-heritage-accent hidden hover:underline">Remove</button>
+          </div>
+          <p class="text-[11px] text-heritage-muted mb-2">Upload an existing seal or emblem to edit it using natural language text prompts.</p>
+          <input type="file" id="imageFileInput" accept="image/*" onchange="handleImageReferenceUpload(event)" class="text-xs text-heritage-muted file:mr-2 file:py-1 file:px-2.5 file:border file:border-heritage-border file:text-xs file:bg-heritage-surface file:text-heritage-text file:cursor-pointer" />
+          <div id="imagePreviewContainer" class="hidden mt-2">
+            <img id="imageRefPreview" src="" alt="Reference" class="h-20 w-auto border border-heritage-border object-contain bg-white" />
+          </div>
+        </div>
+
+        <!-- Image Action & State -->
+        <div class="flex items-center justify-between pt-2 border-t border-heritage-border">
+          <span id="imageStatusText" class="text-xs text-heritage-muted">Ready to generate</span>
+          <button type="button" id="generateImageBtn" onclick="executeImageGeneration()" class="px-4 py-2 bg-heritage-accent hover:bg-heritage-accentHover text-white text-xs font-semibold rounded shadow-sm transition-colors flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
+            </svg>
+            <span id="generateImageBtnText">Generate / Edit Asset</span>
+          </button>
+        </div>
+
+        <!-- Generated Result Section -->
+        <div id="generatedImageSection" class="hidden mt-4 pt-4 border-t border-heritage-border">
+          <div class="text-xs font-semibold text-heritage-text mb-2">Generated Visual Asset:</div>
+          <div class="flex flex-col sm:flex-row items-center gap-4 bg-heritage-bg p-3 border border-heritage-border">
+            <img id="generatedImageDisplay" src="" alt="Generated Visual" class="max-h-56 max-w-full object-contain border border-heritage-border bg-white shadow-sm" />
+            <div class="flex flex-col gap-2 w-full sm:w-auto">
+              <button type="button" onclick="insertImageToOutput()" class="px-3 py-1.5 bg-heritage-surface border border-heritage-border text-heritage-text text-xs hover:bg-heritage-surfaceAlt transition-colors font-medium">
+                Insert Into Document
+              </button>
+              <a id="downloadImageLink" href="#" download="manuscript-asset.png" class="px-3 py-1.5 bg-heritage-accent text-white text-xs text-center hover:bg-heritage-accentHover transition-colors font-medium">
+                Download Image (.png)
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- API KEY MODAL -->
+  <div id="apiModal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-heritage-surface border border-heritage-border max-w-md w-full p-6 shadow-xl relative">
+      <div class="flex items-center justify-between mb-4 pb-2 border-b border-heritage-border">
+        <h3 class="text-sm font-semibold text-heritage-text flex items-center gap-2">
+          <svg class="w-4 h-4 text-heritage-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 2l-2 2m-1.5 1.5L16 7l-4 4-2-2-4 4v3h3l4-4 2 2 1.5-1.5M19 5l-2-2"></path>
+            <circle cx="7.5" cy="16.5" r="1.5"></circle>
+          </svg>
+          Google Gemini API Credential
+        </h3>
+        <button onclick="toggleModal(false)" class="text-heritage-muted hover:text-heritage-text">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <p class="text-xs text-heritage-muted mb-3 leading-relaxed">
+        The application is powered by Google Gemini. It automatically uses the attached server secret key (<code class="bg-heritage-bg px-1 py-0.5 border border-heritage-border">GEMINI_API_KEY</code>). You can also configure a custom API Key below.
+      </p>
+
+      <div class="mb-4">
+        <label for="apiKeyInput" class="block text-xs font-medium text-heritage-muted mb-1">Custom API Key Token (Optional)</label>
+        <input type="password" id="apiKeyInput" placeholder="AIzaSy..." class="w-full bg-heritage-bg border border-heritage-border text-heritage-text text-xs p-2.5 focus:outline-none focus:border-heritage-accent font-mono" />
+      </div>
+
+      <div class="flex items-center justify-between text-xs pt-2 border-t border-heritage-border">
+        <button onclick="clearApiKey()" class="text-heritage-accent hover:underline">Remove Custom Key</button>
+        <div class="flex gap-2">
+          <button onclick="toggleModal(false)" class="px-3 py-1.5 border border-heritage-border text-heritage-text hover:bg-heritage-surfaceAlt transition-colors">
+            Cancel
+          </button>
+          <button onclick="saveApiKey()" class="px-4 py-1.5 bg-heritage-accent hover:bg-heritage-accentHover text-white font-medium transition-colors">
+            Save Key
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LEGAL & COMPLIANCE MODAL -->
+  <div id="legalModal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-heritage-surface border border-heritage-border max-w-lg w-full p-6 shadow-xl relative">
+      <div class="flex items-center justify-between mb-3 pb-2 border-b border-heritage-border">
+        <h3 id="legalModalTitle" class="text-sm font-semibold text-heritage-text">Compliance & Governance</h3>
+        <button onclick="closeLegalModal()" class="text-heritage-muted hover:text-heritage-text">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div id="legalModalContent" class="text-xs text-heritage-muted leading-relaxed max-h-72 overflow-y-auto pr-2 space-y-3">
+        <!-- Injected via JavaScript -->
+      </div>
+      <div class="mt-4 pt-3 border-t border-heritage-border flex justify-end">
+        <button onclick="closeLegalModal()" class="px-4 py-1.5 bg-heritage-surfaceAlt border border-heritage-border text-heritage-text hover:bg-heritage-border text-xs transition-colors">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Center -->
+  <div id="toastContainer" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm pointer-events-none"></div>
+
+  <!-- APPLICATION LOGIC -->
+  <script>
+    // TOAST NOTIFICATION UTILITY (In-app notifications avoiding modal alert interruptions)
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      if (!container) return;
+      const toast = document.createElement('div');
+      const styleClasses = type === 'error' 
+        ? 'border-red-600 bg-red-50 text-red-900' 
+        : type === 'success' 
+        ? 'border-emerald-600 bg-emerald-50 text-emerald-900' 
+        : 'border-heritage-accent bg-heritage-surface text-heritage-text';
+      
+      toast.className = `pointer-events-auto border-l-4 p-3 text-xs shadow-md border ${styleClasses} transition-all duration-300 opacity-0 translate-y-2 flex items-center justify-between gap-3`;
+      toast.innerHTML = `
+        <span class="flex-1 font-medium">${message}</span>
+        <button onclick="this.parentElement.remove()" class="text-heritage-muted hover:text-heritage-text font-bold leading-none text-base">&times;</button>
+      `;
+      container.appendChild(toast);
+      requestAnimationFrame(() => {
+        toast.classList.remove('opacity-0', 'translate-y-2');
+      });
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 320);
+      }, 4000);
+    }
+    // PRESET DATA REPOSITORY
+    const PRESETS = {
+      proposal: `Bhai portfolio dekha aapka, kaafi zabardast hai. Humey apni brand "Dua & Dhuan" ke liye ek luxury aesthetic proposal chahiye. Humein dark gothic moodboard + Sufi mysticism theme explain karni hai clients ko. Please design aur copy dono refine karke client presentation format mein convert kar do. Deadline next Monday tak rakhein.`,
+      
+      academic: `The impact of Artificial Intelligence on regional craftsmanship in South Asia presents both economic opportunities and cultural preservation challenges. By utilizing LLMs and modern AI tools, local artisans can streamline brand creation, export logistics, and international digital marketing while maintaining their rich traditional heritage.`,
+      
+      client_email: `Dear Client, Please find attached Invoice #2026-89 for the Brand Inspo Board and identity suite developed for your project. The total outstanding amount is PKR 85,000 payable within 7 business days. Let us know if you require any adjustments to the deliverables.`,
+      
+      notes: `Meeting summary notes:
+- Client wants dark candles theme with Jasmine and Oud scent.
+- Target audience is Gen Z and young millennials in Karachi and Lahore.
+- Deliverables: Logo, typography palette (Cinzel & Cormorant Garamond), packaging mockup.
+- Next step: Send revised moodboard by Friday.`,
+
+      legal_deed: `Agreement Clause: The Tenant agrees to remit the agreed monthly lease consideration of PKR 120,000 strictly on or prior to the 5th day of each calendar month. In the event of default exceeding fifteen (15) consecutive calendar days, the Landlord retains full unilateral entitlement to terminate occupancy with immediate forfeiture of deposit.`,
+
+      urdu_official: `وزارتِ انفارمیشن ٹیکنالوجی و ٹیلی کمیونیکیشن کے مطابق پاکستان بھر کے تمام ڈیجیٹل برآمد کنندگان اور فری لانسرز کے لیے زرمبادلہ اور ادائیگی کے ضوابط کو باقاعدہ آسان بنا دیا گیا ہے، تاکہ بین الاقوامی رقوم کی منتقلی بلا تعطل اور شفاف انداز میں ممکن ہو سکے۔`
+    };
+
+    // APPLICATION STATE
+    const DRAFT_STORAGE_KEY = 'urdu_localizer_input_draft_v1';
+    let userApiKey = localStorage.getItem('gemini_api_key') || "";
+    let currentDirection = "auto";
+    let isNastaliq = true;
+    let isRawView = false;
+    let currentRawOutput = "";
+    let loadingInterval = null;
+    let autoSaveInterval = null;
+    let saveDebounceTimer = null;
+    let lastSavedText = "";
+
+    // Voice recording state
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let recordingTimerInterval = null;
+    let recordingStartTime = null;
+
+    // Image reference state
+    let referenceImageData = "";
+    let referenceImageMime = "";
+    let lastGeneratedImageUrl = "";
+
+    // INITIALIZATION & DRAFT RESTORATION
+    window.addEventListener('DOMContentLoaded', () => {
+      if (window.marked && typeof marked.setOptions === 'function') {
+        marked.setOptions({
+          gfm: true,
+          breaks: true
+        });
+      }
+
+      updateKeyStatusUI();
+
+      // Attempt to restore persistent draft from localStorage
+      let draftRestored = false;
+      try {
+        const rawDraft = localStorage.getItem(DRAFT_STORAGE_KEY);
+        if (rawDraft) {
+          const draft = JSON.parse(rawDraft);
+          if (draft && typeof draft.text === 'string' && draft.text.trim().length > 0) {
+            const inputElem = document.getElementById('inputText');
+            inputElem.value = draft.text;
+            lastSavedText = draft.text;
+
+            if (draft.task && document.getElementById('taskGoal')) {
+              document.getElementById('taskGoal').value = draft.task;
+            }
+            if (draft.tone && document.getElementById('toneSelector')) {
+              document.getElementById('toneSelector').value = draft.tone;
+            }
+            if (draft.model && document.getElementById('modelSelector')) {
+              document.getElementById('modelSelector').value = draft.model;
+            }
+            if (typeof draft.useSearchGrounding === 'boolean' && document.getElementById('searchGroundingToggle')) {
+              document.getElementById('searchGroundingToggle').checked = draft.useSearchGrounding;
+            }
+
+            updateInputMetrics();
+            const savedTime = draft.savedAt ? new Date(draft.savedAt) : new Date();
+            updateSaveIndicator('restored', savedTime);
+            draftRestored = true;
+          }
+        }
+      } catch (err) {
+        console.warn('Draft recovery encountered an issue:', err);
+      }
+
+      if (!draftRestored) {
+        loadPreset('proposal');
+      }
+
+      try {
+        const savedFont = localStorage.getItem('preferred_english_font');
+        if (savedFont && document.getElementById('englishFontSelector')) {
+          document.getElementById('englishFontSelector').value = savedFont;
+          currentEnglishFont = savedFont;
+        }
+      } catch (e) {}
+      applyOutputTypography();
+
+      initPeriodicAutoSave();
+
+      document.addEventListener('click', (e) => {
+        const wrapper = document.getElementById('exportMenuWrapper');
+        if (wrapper && !wrapper.contains(e.target)) {
+          document.getElementById('exportMenu').classList.add('hidden');
+        }
+      });
+    });
+
+    // AUTO-SAVE ENGINE & DRAFT MANAGEMENT
+    function saveDraftNow() {
+      const inputElem = document.getElementById('inputText');
+      if (!inputElem) return;
+
+      const text = inputElem.value;
+      const task = document.getElementById('taskGoal')?.value || 'translate_urdu';
+      const tone = document.getElementById('toneSelector')?.value || 'professional';
+      const model = document.getElementById('modelSelector')?.value || 'gemini-3.5-flash-lite';
+      const useSearchGrounding = document.getElementById('searchGroundingToggle')?.checked || false;
+
+      const draftPayload = {
+        text,
+        task,
+        tone,
+        model,
+        useSearchGrounding,
+        savedAt: Date.now()
+      };
+
+      try {
+        localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(draftPayload));
+        lastSavedText = text;
+        updateSaveIndicator('saved', new Date(draftPayload.savedAt));
+      } catch (e) {
+        console.warn('Failed to commit draft to localStorage:', e);
+        updateSaveIndicator('error');
+      }
+    }
+
+    function handleInputContentChange() {
+      updateInputMetrics();
+      updateSaveIndicator('saving');
+
+      clearTimeout(saveDebounceTimer);
+      saveDebounceTimer = setTimeout(() => {
+        saveDraftNow();
+      }, 700);
+    }
+
+    function initPeriodicAutoSave() {
+      if (autoSaveInterval) clearInterval(autoSaveInterval);
+      
+      autoSaveInterval = setInterval(() => {
+        const currentText = document.getElementById('inputText')?.value || "";
+        if (currentText !== lastSavedText) {
+          saveDraftNow();
+        }
+      }, 3500);
+
+      window.addEventListener('beforeunload', () => {
+        saveDraftNow();
+      });
+      window.addEventListener('pagehide', () => {
+        saveDraftNow();
+      });
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') {
+          saveDraftNow();
+        }
+      });
+    }
+
+    function updateSaveIndicator(status, timeObj = new Date()) {
+      const dot = document.getElementById('saveStatusDot');
+      const text = document.getElementById('saveStatusText');
+      if (!dot || !text) return;
+
+      if (status === 'saving') {
+        dot.className = "w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse";
+        text.textContent = "Saving...";
+      } else if (status === 'saved') {
+        dot.className = "w-1.5 h-1.5 rounded-full bg-emerald-600";
+        const timeStr = timeObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        text.textContent = `Saved ${timeStr}`;
+      } else if (status === 'restored') {
+        dot.className = "w-1.5 h-1.5 rounded-full bg-emerald-600";
+        const timeStr = timeObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        text.textContent = `Restored (${timeStr})`;
+      } else if (status === 'cleared') {
+        dot.className = "w-1.5 h-1.5 rounded-full bg-heritage-muted";
+        text.textContent = "Draft cleared";
+      } else if (status === 'error') {
+        dot.className = "w-1.5 h-1.5 rounded-full bg-heritage-accent";
+        text.textContent = "Storage full";
+      }
+    }
+
+    // MICROPHONE AUDIO DICTATION (gemini-3.5-transcribe)
+    async function toggleAudioRecording() {
+      if (mediaRecorder && mediaRecorder.state === 'recording') {
+        stopAudioRecording();
+      } else {
+        startAudioRecording();
+      }
+    }
+
+    async function startAudioRecording() {
+      try {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          showToast('Audio recording is not supported in this browser environment.', 'error');
+          return;
+        }
+
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        audioChunks = [];
+        
+        let mimeType = 'audio/webm';
+        if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
+          mimeType = 'audio/webm;codecs=opus';
+        } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
+          mimeType = 'audio/mp4';
+        }
+
+        mediaRecorder = new MediaRecorder(stream, { mimeType });
+        
+        mediaRecorder.ondataavailable = (e) => {
+          if (e.data && e.data.size > 0) {
+            audioChunks.push(e.data);
+          }
+        };
+
+        mediaRecorder.onstop = async () => {
+          clearInterval(recordingTimerInterval);
+          document.getElementById('recordingBanner').classList.add('hidden');
+          document.getElementById('recordBtnLabel').textContent = 'Dictate';
+
+          if (audioChunks.length === 0) return;
+
+          const audioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType });
+          await transcribeAudioBlob(audioBlob);
+
+          // Stop all mic tracks
+          stream.getTracks().forEach(track => track.stop());
+        };
+
+        mediaRecorder.start();
+
+        // UI state update
+        document.getElementById('recordingBanner').classList.remove('hidden');
+        document.getElementById('recordBtnLabel').textContent = 'Stop';
+        recordingStartTime = Date.now();
+        const timerElem = document.getElementById('recordingTimer');
+        timerElem.textContent = '00:00';
+
+        clearInterval(recordingTimerInterval);
+        recordingTimerInterval = setInterval(() => {
+          const elapsedSecs = Math.floor((Date.now() - recordingStartTime) / 1000);
+          const mins = String(Math.floor(elapsedSecs / 60)).padStart(2, '0');
+          const secs = String(elapsedSecs % 60).padStart(2, '0');
+          timerElem.textContent = `${mins}:${secs}`;
+        }, 1000);
+
+      } catch (err) {
+        console.error('Microphone access denied or error:', err);
+        showToast('Could not access microphone: ' + (err.message || 'Permission denied'), 'error');
+      }
+    }
+
+    function stopAudioRecording() {
+      if (mediaRecorder && mediaRecorder.state === 'recording') {
+        mediaRecorder.stop();
+      }
+    }
+
+    function cancelAudioRecording() {
+      if (mediaRecorder && mediaRecorder.state === 'recording') {
+        audioChunks = [];
+        mediaRecorder.stop();
+        document.getElementById('recordingBanner').classList.add('hidden');
+        document.getElementById('recordBtnLabel').textContent = 'Dictate';
+      }
+    }
+
+    async function transcribeAudioBlob(blob) {
+      const saveStatus = document.getElementById('saveStatusText');
+      saveStatus.textContent = 'Transcribing voice (gemini-3.5-transcribe)...';
+
+      const reader = new FileReader();
+      reader.readAsDataURL(blob);
+      reader.onloadend = async () => {
+        const base64Data = reader.result;
+        try {
+          const res = await fetch('/api/transcribe', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              audioData: base64Data,
+              mimeType: blob.type || 'audio/webm',
+              userApiKey
+            })
+          });
+
+          const data = await res.json();
+          if (!res.ok) {
+            throw new Error(data.error || 'Audio transcription failed.');
+          }
+
+          const transcribed = data.text;
+          const inputElem = document.getElementById('inputText');
+          if (inputElem.value.trim().length > 0) {
+            inputElem.value = inputElem.value + "\n\n" + transcribed;
+          } else {
+            inputElem.value = transcribed;
+          }
+
+          handleInputContentChange();
+          saveStatus.textContent = 'Voice transcribed!';
+          setTimeout(() => updateSaveIndicator('saved'), 2500);
+
+        } catch (err) {
+          console.error('Transcription error:', err);
+          showToast('Transcription Error: ' + err.message, 'error');
+          updateSaveIndicator('saved');
+        }
+      };
+    }
+
+    // MANUSCRIPT VISUAL STUDIO (gemini-3.1-flash-image-preview)
+    function toggleImageModal(show) {
+      const modal = document.getElementById('imageModal');
+      if (show) {
+        modal.classList.remove('hidden');
+      } else {
+        modal.classList.add('hidden');
+      }
+    }
+
+    function setImagePromptPreset(text) {
+      document.getElementById('imagePrompt').value = text;
+    }
+
+    function handleImageReferenceUpload(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+
+      referenceImageMime = file.type;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        referenceImageData = e.target.result;
+        document.getElementById('imageRefPreview').src = referenceImageData;
+        document.getElementById('imagePreviewContainer').classList.remove('hidden');
+        document.getElementById('clearImageRefBtn').classList.remove('hidden');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function clearImageReference() {
+      referenceImageData = "";
+      referenceImageMime = "";
+      document.getElementById('imageFileInput').value = "";
+      document.getElementById('imagePreviewContainer').classList.add('hidden');
+      document.getElementById('clearImageRefBtn').classList.add('hidden');
+    }
+
+    async function executeImageGeneration() {
+      const prompt = document.getElementById('imagePrompt').value.trim();
+      if (!prompt) {
+        showToast('Please enter a prompt describing the seal or document visual.', 'error');
+        return;
+      }
+
+      const btn = document.getElementById('generateImageBtn');
+      const btnText = document.getElementById('generateImageBtnText');
+      const statusText = document.getElementById('imageStatusText');
+      const origContent = btn.innerHTML;
+
+      btn.disabled = true;
+      btn.classList.add('opacity-75');
+      btnText.textContent = referenceImageData ? "Editing Asset (gemini-3.1-flash-image-preview)..." : "Generating (gemini-3.1-flash-image-preview)...";
+      statusText.textContent = "Synthesizing manuscript graphics...";
+
+      try {
+        const res = await fetch('/api/generate-image', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            prompt,
+            referenceImage: referenceImageData || undefined,
+            referenceMime: referenceImageMime || undefined,
+            userApiKey
+          })
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || 'Image generation failed');
+        }
+
+        lastGeneratedImageUrl = data.imageUrl;
+        document.getElementById('generatedImageDisplay').src = lastGeneratedImageUrl;
+        document.getElementById('downloadImageLink').href = lastGeneratedImageUrl;
+        document.getElementById('generatedImageSection').classList.remove('hidden');
+        statusText.textContent = "Visual asset ready!";
+
+      } catch (err) {
+        console.error('Image generation error:', err);
+        statusText.textContent = "Error: " + err.message;
+        showToast("Image Error: " + err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.classList.remove('opacity-75');
+        btnText.textContent = "Generate / Edit Asset";
+      }
+    }
+
+    function insertImageToOutput() {
+      if (!lastGeneratedImageUrl) return;
+
+      const outputElem = document.getElementById('outputContent');
+      const placeholder = document.getElementById('placeholderState');
+      placeholder.classList.add('hidden');
+      outputElem.classList.remove('hidden');
+
+      const imgHtml = `\n\n<div class="my-4 text-center"><img src="${lastGeneratedImageUrl}" alt="Manuscript Seal" class="inline-block max-h-48 border border-heritage-border bg-white shadow-sm p-1" /></div>\n\n`;
+      currentRawOutput += `\n\n![Manuscript Seal](${lastGeneratedImageUrl})\n\n`;
+      outputElem.innerHTML += imgHtml;
+
+      toggleImageModal(false);
+      showToast('Visual asset embedded into output document!', 'success');
+    }
+
+    // API KEY MANAGEMENT
+    function toggleModal(show) {
+      const modal = document.getElementById('apiModal');
+      if (show) {
+        document.getElementById('apiKeyInput').value = userApiKey;
+        modal.classList.remove('hidden');
+      } else {
+        modal.classList.add('hidden');
+      }
+    }
+
+    function saveApiKey() {
+      const key = document.getElementById('apiKeyInput').value.trim();
+      userApiKey = key;
+      localStorage.setItem('gemini_api_key', key);
+      updateKeyStatusUI();
+      toggleModal(false);
+    }
+
+    function clearApiKey() {
+      userApiKey = "";
+      localStorage.removeItem('gemini_api_key');
+      document.getElementById('apiKeyInput').value = "";
+      updateKeyStatusUI();
+      toggleModal(false);
+    }
+
+    async function updateKeyStatusUI() {
+      const statusText = document.getElementById('apiKeyStatusText');
+      try {
+        const res = await fetch('/api/status');
+        const data = await res.json();
+        if (data.hasServerKey) {
+          statusText.textContent = userApiKey ? "Custom Key Active" : "AI Key Ready";
+          statusText.classList.add("text-emerald-700");
+          return;
+        }
+      } catch (e) {
+        console.warn('Status check failed:', e);
+      }
+
+      if (userApiKey) {
+        statusText.textContent = "Key Active";
+        statusText.classList.add("text-emerald-700");
+      } else {
+        statusText.textContent = "Set API Key";
+        statusText.classList.remove("text-emerald-700");
+      }
+    }
+
+    // PRESET SELECTION
+    function loadPreset(key) {
+      if (PRESETS[key]) {
+        const inputElem = document.getElementById('inputText');
+        inputElem.value = PRESETS[key];
+        
+        const taskSelect = document.getElementById('taskGoal');
+        const toneSelect = document.getElementById('toneSelector');
+
+        if (key === 'proposal') {
+          taskSelect.value = 'roman_to_english';
+          toneSelect.value = 'persuasive';
+        } else if (key === 'academic') {
+          taskSelect.value = 'translate_urdu';
+          toneSelect.value = 'academic';
+        } else if (key === 'client_email') {
+          taskSelect.value = 'translate_urdu';
+          toneSelect.value = 'professional';
+        } else if (key === 'notes') {
+          taskSelect.value = 'summarize_action';
+          toneSelect.value = 'simple';
+        } else if (key === 'legal_deed') {
+          taskSelect.value = 'translate_urdu';
+          toneSelect.value = 'legal';
+        } else if (key === 'urdu_official') {
+          taskSelect.value = 'roman_to_english';
+          toneSelect.value = 'professional';
+        }
+
+        updateInputMetrics();
+        saveDraftNow();
+      }
+    }
+
+    function clearInput() {
+      const inputElem = document.getElementById('inputText');
+      inputElem.value = '';
+      lastSavedText = '';
+      try {
+        localStorage.removeItem(DRAFT_STORAGE_KEY);
+      } catch (e) {
+        console.warn(e);
+      }
+      updateInputMetrics();
+      updateSaveIndicator('cleared');
+
+      document.getElementById('placeholderState').classList.remove('hidden');
+      document.getElementById('outputContent').classList.add('hidden');
+      document.getElementById('rawOutputView').classList.add('hidden');
+      document.getElementById('groundingSourcesContainer').classList.add('hidden');
+      currentRawOutput = "";
+      document.getElementById('outputMetrics').textContent = "Awaiting output";
+      document.getElementById('outputTimestamp').textContent = "";
+    }
+
+    async function pasteClipboard() {
+      try {
+        if (navigator.clipboard && navigator.clipboard.readText) {
+          const clipText = await navigator.clipboard.readText();
+          if (clipText) {
+            document.getElementById('inputText').value = clipText;
+            handleInputContentChange();
+            return;
+          }
+        }
+        document.getElementById('inputText').focus();
+      } catch (e) {
+        console.warn('Clipboard read failed or permission denied:', e);
+        const inputElem = document.getElementById('inputText');
+        inputElem.focus();
+        const origPlaceholder = inputElem.placeholder;
+        inputElem.placeholder = "Clipboard access restricted in browser. Press Ctrl+V (Cmd+V) to paste.";
+        setTimeout(() => {
+          inputElem.placeholder = origPlaceholder;
+        }, 3000);
+      }
+    }
+
+    function updateInputMetrics() {
+      const text = document.getElementById('inputText')?.value.trim() || '';
+      const words = text ? text.split(/\s+/).filter(Boolean).length : 0;
+      const chars = text.length;
+      const metricsElem = document.getElementById('inputMetrics');
+      if (metricsElem) {
+        metricsElem.textContent = `${words} words \u2022 ${chars} chars`;
+      }
+    }
+
+    // TYPOGRAPHY & DIRECTION CONTROLS
+    let currentEnglishFont = "'Plus Jakarta Sans', sans-serif";
+
+    function changeOutputFont(fontFamily) {
+      currentEnglishFont = fontFamily;
+      applyOutputTypography();
+      try {
+        localStorage.setItem('preferred_english_font', fontFamily);
+      } catch (e) {}
+    }
+
+    function applyOutputTypography() {
+      const outputElem = document.getElementById('outputContent');
+      const container = document.getElementById('outputContainer');
+      const selector = document.getElementById('englishFontSelector');
+      const chosenFont = selector ? selector.value : currentEnglishFont;
+
+      const isRtl = container ? container.getAttribute('dir') === 'rtl' : false;
+
+      if (outputElem) {
+        if (isRtl) {
+          const urduFont = isNastaliq ? "'Noto Nastaliq Urdu', serif" : "'Noto Sans Arabic', sans-serif";
+          outputElem.style.fontFamily = `${urduFont}, ${chosenFont}`;
+        } else {
+          outputElem.style.fontFamily = chosenFont;
+        }
+      }
+
+      if (container) {
+        if (isRtl) {
+          const urduFont = isNastaliq ? "'Noto Nastaliq Urdu', serif" : "'Noto Sans Arabic', sans-serif";
+          container.style.fontFamily = `${urduFont}, ${chosenFont}`;
+        } else {
+          container.style.fontFamily = chosenFont;
+        }
+      }
+    }
+
+    function toggleDirection() {
+      const container = document.getElementById('outputContainer');
+      const btn = document.getElementById('dirToggleBtn');
+      
+      if (currentDirection === 'rtl') {
+        currentDirection = 'ltr';
+        container.setAttribute('dir', 'ltr');
+        btn.textContent = 'LTR';
+        container.classList.remove('text-right');
+      } else {
+        currentDirection = 'rtl';
+        container.setAttribute('dir', 'rtl');
+        btn.textContent = 'RTL';
+        container.classList.add('text-right');
+      }
+      applyOutputTypography();
+    }
+
+    function toggleScriptStyle() {
+      const container = document.getElementById('outputContainer');
+      const btn = document.getElementById('scriptToggleBtn');
+      
+      if (isNastaliq) {
+        isNastaliq = false;
+        container?.classList.remove('font-urdu');
+        container?.classList.add('font-arabic');
+        if (btn) btn.textContent = 'نسخ';
+      } else {
+        isNastaliq = true;
+        container?.classList.remove('font-arabic');
+        container?.classList.add('font-urdu');
+        if (btn) btn.textContent = 'نستعلیق';
+      }
+      applyOutputTypography();
+    }
+
+    function toggleViewMode() {
+      const renderedElem = document.getElementById('outputContent');
+      const rawElem = document.getElementById('rawOutputView');
+      const btn = document.getElementById('viewModeBtn');
+
+      if (!currentRawOutput) return;
+
+      if (isRawView) {
+        isRawView = false;
+        rawElem.classList.add('hidden');
+        renderedElem.classList.remove('hidden');
+        btn.textContent = 'Raw';
+      } else {
+        isRawView = true;
+        rawElem.value = currentRawOutput;
+        renderedElem.classList.add('hidden');
+        rawElem.classList.remove('hidden');
+        btn.textContent = 'Rendered';
+      }
+    }
+
+    // EXPORT & PRINT
+    function toggleExportMenu() {
+      const menu = document.getElementById('exportMenu');
+      menu.classList.toggle('hidden');
+    }
+
+    function exportDocument(format) {
+      document.getElementById('exportMenu').classList.add('hidden');
+      if (!currentRawOutput) {
+        showToast('Please process or generate a localized document before exporting.', 'error');
+        return;
+      }
+
+      const filename = `localized-document-${new Date().toISOString().slice(0, 10)}.${format}`;
+      const blob = new Blob([currentRawOutput], { type: format === 'md' ? 'text/markdown;charset=utf-8' : 'text/plain;charset=utf-8' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      link.click();
+      URL.revokeObjectURL(link.href);
+      showToast(`Document exported as ${format.toUpperCase()}`, 'success');
+    }
+
+    function triggerPrint() {
+      document.getElementById('exportMenu')?.classList.add('hidden');
+      if (isRawView) {
+        toggleViewMode();
+      }
+      const outputElem = document.getElementById('outputContent');
+      if (!currentRawOutput && (!outputElem || outputElem.classList.contains('hidden') || !outputElem.innerText.trim())) {
+        showToast('Please generate or load a localized document before printing.', 'error');
+        return;
+      }
+
+      const now = new Date();
+      const meta = document.getElementById('printMetadata');
+      if (meta) {
+        meta.textContent = `Generated on: ${now.toLocaleDateString()} ${now.toLocaleTimeString()} | Format: Dastavez AI Publication-Grade Localized Transcript`;
+      }
+      window.print();
+    }
+
+    function copyOutput() {
+      if (!currentRawOutput) return;
+
+      const btn = document.getElementById('copyBtn');
+      const originalHTML = btn.innerHTML;
+
+      const showSuccess = () => {
+        btn.innerHTML = `<span class="text-emerald-700">✓ Copied</span>`;
+        showToast('Transcript copied to clipboard', 'success');
+        setTimeout(() => {
+          btn.innerHTML = originalHTML;
+        }, 2000);
+      };
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(currentRawOutput).then(showSuccess).catch(() => {
+          fallbackClipboardCopy(currentRawOutput, showSuccess);
+        });
+      } else {
+        fallbackClipboardCopy(currentRawOutput, showSuccess);
+      }
+    }
+
+    function fallbackClipboardCopy(text, onSuccess) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      ta.style.top = '-9999px';
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      try {
+        document.execCommand('copy');
+        if (onSuccess) onSuccess();
+      } catch (err) {
+        console.error('Fallback clipboard copy failed:', err);
+      }
+      document.body.removeChild(ta);
+    }
+
+    // DOCUMENT PROCESSING ENGINE (with Search Grounding)
+    async function processDocument() {
+      const text = document.getElementById('inputText').value.trim();
+      if (!text) {
+        showToast('Please enter or paste source content to localize.', 'error');
+        return;
+      }
+
+      const task = document.getElementById('taskGoal').value;
+      const tone = document.getElementById('toneSelector').value;
+      const modelName = document.getElementById('modelSelector').value;
+      const useSearchGrounding = document.getElementById('searchGroundingToggle').checked;
+
+      const processBtn = document.getElementById('processBtn');
+      const origBtnContent = processBtn.innerHTML;
+      processBtn.disabled = true;
+      processBtn.classList.add('opacity-75', 'cursor-not-allowed');
+      processBtn.innerHTML = `
+        <svg class="w-4 h-4 text-white animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" stroke-opacity="0.25"></circle>
+          <path d="M12 2a10 10 0 0 1 10 10" stroke-opacity="0.8"></path>
+        </svg>
+        <span>Processing...</span>
+      `;
+
+      const placeholder = document.getElementById('placeholderState');
+      const outputElem = document.getElementById('outputContent');
+      const rawElem = document.getElementById('rawOutputView');
+      const loading = document.getElementById('loadingState');
+      const stageText = document.getElementById('loadingStageText');
+      const groundingContainer = document.getElementById('groundingSourcesContainer');
+      const groundingList = document.getElementById('groundingSourcesList');
+
+      placeholder.classList.add('hidden');
+      outputElem.classList.add('hidden');
+      rawElem.classList.add('hidden');
+      groundingContainer.classList.add('hidden');
+      loading.classList.remove('hidden');
+      loading.classList.add('flex');
+
+      const stages = useSearchGrounding ? [
+        "Grounding via Google Search (gemini-3.5-flash)...",
+        "Validating statutory & cultural citations...",
+        "Applying Nastaliq calligraphy & layout..."
+      ] : [
+        "Analyzing linguistic register & vocabulary...",
+        "Evaluating contextual syntax & honorifics...",
+        "Applying Nastaliq calligraphy & layout..."
+      ];
+      let stageIdx = 0;
+      stageText.textContent = stages[0];
+      clearInterval(loadingInterval);
+      loadingInterval = setInterval(() => {
+        stageIdx = (stageIdx + 1) % stages.length;
+        stageText.textContent = stages[stageIdx];
+      }, 1200);
+
+      try {
+        const response = await fetch('/api/localize', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            task,
+            content: text,
+            tone,
+            model: modelName,
+            userApiKey,
+            useSearchGrounding
+          })
+        });
+
+        clearInterval(loadingInterval);
+
+        if (!response.ok) {
+          const errData = await response.json().catch(() => ({}));
+          throw new Error(errData.error || `HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        const outputText = result.text || "No transcription generated.";
+        currentRawOutput = outputText;
+
+        const container = document.getElementById('outputContainer');
+        const dirBtn = document.getElementById('dirToggleBtn');
+        const isUrduPrimary = task === 'translate_urdu' || task === 'roman_to_formal_urdu' || /[\u0600-\u06FF]/.test(outputText.substring(0, 120));
+
+        if (isUrduPrimary) {
+          currentDirection = 'rtl';
+          container.setAttribute('dir', 'rtl');
+          container.classList.add('font-urdu');
+          container.classList.remove('font-arabic');
+          container.classList.add('text-right');
+          dirBtn.textContent = 'RTL';
+          isNastaliq = true;
+          const scriptBtn = document.getElementById('scriptToggleBtn');
+          if (scriptBtn) scriptBtn.textContent = 'نستعلیق';
+        } else {
+          currentDirection = 'ltr';
+          container.setAttribute('dir', 'ltr');
+          container.classList.remove('font-urdu');
+          container.classList.remove('font-arabic');
+          container.classList.remove('text-right');
+          dirBtn.textContent = 'LTR';
+        }
+
+        if (window.marked && typeof marked.parse === 'function') {
+          outputElem.innerHTML = marked.parse(outputText);
+        } else {
+          outputElem.textContent = outputText;
+        }
+
+        // Render Search Grounding Citations or status notice if returned
+        if (result.groundingSources && result.groundingSources.length > 0) {
+          groundingList.innerHTML = result.groundingSources.map(s => `
+            <li class="flex items-center gap-1.5 truncate">
+              <span class="text-heritage-accent font-bold">&bull;</span>
+              <a href="${s.uri}" target="_blank" rel="noopener noreferrer" class="text-heritage-accent hover:underline truncate" title="${s.title}">
+                ${s.title}
+              </a>
+              <span class="text-[10px] text-heritage-subtle truncate">(${s.uri})</span>
+            </li>
+          `).join('');
+          groundingContainer.classList.remove('hidden');
+        } else if (result.groundingNote) {
+          groundingList.innerHTML = `
+            <li class="text-[11px] text-heritage-muted italic">
+              ${result.groundingNote}
+            </li>
+          `;
+          groundingContainer.classList.remove('hidden');
+        } else {
+          groundingContainer.classList.add('hidden');
+        }
+
+        const outWords = outputText.split(/\s+/).filter(Boolean).length;
+        const outChars = outputText.length;
+        document.getElementById('outputMetrics').textContent = `${outWords} words \u2022 ${outChars} chars`;
+        document.getElementById('outputTimestamp').textContent = `Localized at ${new Date().toLocaleTimeString()}`;
+
+        loading.classList.remove('flex');
+        loading.classList.add('hidden');
+        outputElem.classList.remove('hidden');
+        applyOutputTypography();
+
+      } catch (err) {
+        clearInterval(loadingInterval);
+        loading.classList.remove('flex');
+        loading.classList.add('hidden');
+        
+        outputElem.innerHTML = `
+          <div class="border border-heritage-accent/40 bg-heritage-accentLight p-4 my-2">
+            <div class="text-xs font-semibold text-heritage-accent uppercase tracking-wider mb-1">
+              Localization Halted
+            </div>
+            <p class="text-xs text-heritage-text leading-relaxed mb-3">
+              ${err.message || 'Network error encountered during model inference.'}
+            </p>
+            <div class="flex items-center gap-3">
+              <button onclick="toggleModal(true)" class="bg-heritage-surface hover:bg-heritage-border border border-heritage-border text-heritage-text text-xs px-3 py-1.5 transition-colors">
+                Configure API Key
+              </button>
+              <span class="text-[11px] text-heritage-muted">
+                Make sure your Google Gemini API Key is configured in Settings > Secrets or the dialog.
+              </span>
+            </div>
+          </div>
+        `;
+        outputElem.classList.remove('hidden');
+      } finally {
+        processBtn.disabled = false;
+        processBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+        processBtn.innerHTML = origBtnContent;
+      }
+    }
+
+    // LEGAL & COMPLIANCE MODAL
+    function openLegalModal(type) {
+      const modal = document.getElementById('legalModal');
+      const title = document.getElementById('legalModalTitle');
+      const content = document.getElementById('legalModalContent');
+
+      if (type === 'privacy') {
+        title.textContent = "Privacy Policy";
+        content.innerHTML = `
+          <p><strong>1. Ephemeral Processing:</strong> This application executes in-browser and through a private server proxy. No source text, audio recordings, or translated transcripts are harvested or permanently stored.</p>
+          <p><strong>2. Audio & Media Handling:</strong> Microphone audio recorded for transcription via <code>gemini-3.5-transcribe</code> is streamed solely to the API and discarded immediately after transcription.</p>
+          <p><strong>3. Local Draft Retention:</strong> Source text drafts and settings are stored locally in your browser's localStorage for session continuity and can be cleared anytime via the Clear button.</p>
+        `;
+      } else if (type === 'terms') {
+        title.textContent = "Terms of Service";
+        content.innerHTML = `
+          <p><strong>1. Document Responsibility:</strong> Users maintain complete ownership and responsibility for the content submitted for localization and the subsequent deployment of translated transcripts.</p>
+          <p><strong>2. Legal & Commercial Verification:</strong> While this engine applies high-register linguistic models, localized legal contracts and binding affidavits should be reviewed by a certified advocate before formal submission.</p>
+          <p><strong>3. Service Continuity:</strong> Inference throughput and rate quotas are governed by Google AI Studio API availability and user-configured account tiers.</p>
+        `;
+      } else if (type === 'security') {
+        title.textContent = "Data Sovereignty & Architecture";
+        content.innerHTML = `
+          <p><strong>Direct Endpoint Integration:</strong> The application does not pass client documentation through middleman proxies or third-party telemetry aggregators.</p>
+          <p><strong>Zero Third-Party Trackers:</strong> No marketing cookies, behavioral analytics, or third-party tracking scripts are bundled into this codebase.</p>
+          <p><strong>Local Export:</strong> All document generation, text formatting, markdown export, and print preparation are performed entirely client-side using native browser capabilities.</p>
+        `;
+      }
+
+      modal.classList.remove('hidden');
+    }
+
+    function closeLegalModal() {
+      document.getElementById('legalModal').classList.add('hidden');
+    }
+  </script>
+</body>
+</html>
